@@ -17,6 +17,8 @@ ABlackHoleActor::ABlackHoleActor()
 	InnerSphereComp->SetSphereRadius(100);
 	InnerSphereComp->SetupAttachment(MeshComp);
 
+	InnerSphereComp->OnComponentBeginOverlap.AddDynamic(this, &ABlackHoleActor::OverlapInnerSphere);
+
 	OuterSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("OuterSphere"));
 	OuterSphereComp->SetSphereRadius(3000);
 	OuterSphereComp->SetupAttachment(MeshComp);
@@ -41,6 +43,21 @@ void ABlackHoleActor::OverlapInnerSphere(UPrimitiveComponent * OverlappedComp, A
 void ABlackHoleActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	TArray<UPrimitiveComponent*> OverlappingComps;
+	OuterSphereComp->GetOverlappingComponents(OverlappingComps);
+
+	for(int32 i = 0; i < OverlappingComps.Num(); ++i)
+	{
+		UPrimitiveComponent* PrimComp = OverlappingComps[i];
+		if(PrimComp && PrimComp->IsSimulatingPhysics())
+		{
+			const float SphereRadius = OuterSphereComp->GetScaledSphereRadius();
+			const float ForceStrength = -2000;
+
+			PrimComp->AddRadialForce(GetActorLocation(), SphereRadius, ForceStrength, ERadialImpulseFalloff::RIF_Constant, true);
+		}
+	}
 
 }
 

@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "BlackHoleActor.generated.h"
 #include "Components/SphereComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "BlackHoleActor.generated.h"
+
 
 UCLASS()
 class FPSGAME_API ABlackHoleActor : public AActor
@@ -20,14 +22,17 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(VisibleAnywhere, Catehory = "Components")
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UStaticMeshComponent* MeshComp;
 
-	UPROPERTY(VisibleAnywhere, Catehory = "Components")
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USphereComponent* OuterSphereComp;
 
-	UPROPERTY(VisibleAnywhere, Catehory = "Components")
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USphereComponent* InnerSphereComp;
+
+	UFUNCTION()
+	void OverlapInnerSphere(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 public:	
 	// Called every frame
