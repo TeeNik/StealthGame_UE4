@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "FPSExtractionZone.h"
+#include "FPSCharacter.h"
+#include "FPSGameMode.h"
 
 AFPSExtractionZone::AFPSExtractionZone()
 {
@@ -21,4 +23,14 @@ AFPSExtractionZone::AFPSExtractionZone()
 void AFPSExtractionZone::HandleOverlap(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
 	UE_LOG(LogTemp, Log, TEXT("Overlapped with extraction zone"));
+
+	AFPSCharacter* MyPawn = Cast<AFPSCharacter>(OtherActor);
+	if(MyPawn && MyPawn->bIsCarryingObjective)
+	{
+		AFPSGameMode* GM = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
+		if(GM)
+		{
+			GM->CompleteMission(MyPawn);
+		}
+	}
 }
