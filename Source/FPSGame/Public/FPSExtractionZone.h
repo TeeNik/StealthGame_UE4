@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/BoxComponent.h"
+#include "Components/DecalComponent.h"
 #include "FPSExtractionZone.generated.h"
 
 class UBoxComponent;
@@ -21,6 +22,9 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UBoxComponent* OverlapComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UDecalComponent* DecalComp;
 
 	UFUNCTION()
 	void HandleOverlap(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
