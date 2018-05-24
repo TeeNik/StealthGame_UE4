@@ -3,6 +3,7 @@
 #include "FPSExtractionZone.h"
 #include "FPSCharacter.h"
 #include "FPSGameMode.h"
+#include "Kismet/GameplayStatics.h"
 
 AFPSExtractionZone::AFPSExtractionZone()
 {
@@ -25,12 +26,19 @@ void AFPSExtractionZone::HandleOverlap(UPrimitiveComponent * OverlappedComp, AAc
 	UE_LOG(LogTemp, Log, TEXT("Overlapped with extraction zone"));
 
 	AFPSCharacter* MyPawn = Cast<AFPSCharacter>(OtherActor);
-	if(MyPawn && MyPawn->bIsCarryingObjective)
+
+	if (MyPawn == nullptr) return;
+
+	if(MyPawn->bIsCarryingObjective)
 	{
 		AFPSGameMode* GM = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
 		if(GM)
 		{
 			GM->CompleteMission(MyPawn);
 		}
+	} 
+	else
+	{
+		UGameplayStatics::PlaySound2D(this, ObjectiveMissingSound);
 	}
 }
