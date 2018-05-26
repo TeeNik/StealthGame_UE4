@@ -2,6 +2,7 @@
 
 #include "FPSAIGuard.h"
 #include "DrawDebugHelpers.h"
+#include "TimerManager.h"
 
 
 // Sets default values
@@ -21,6 +22,8 @@ void AFPSAIGuard::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	OriginalRotation = GetActorRotation();
+
 }
 
 void AFPSAIGuard::OnSeePawn(APawn* SeenPawn)
@@ -32,8 +35,24 @@ void AFPSAIGuard::OnSeePawn(APawn* SeenPawn)
 
 void AFPSAIGuard::OnNoiseHeard(APawn* NoiseInstigator, const FVector& Location, float Volume)
 {
-
 	DrawDebugSphere(GetWorld(), Location, 32, 12, FColor::Green, false, 10);
+
+	FVector Direction = Location - GetActorLocation();
+	Direction.Normalize();
+
+	FRotator NewLookAt = FRotationMatrix::MakeFromX(Direction).Rotator();
+	NewLookAt.Pitch = 0;
+	NewLookAt.Roll = 0;
+
+	SetActorRotation(NewLookAt);
+
+	GetWorldTimerManager().ClearTimer(ResetRotationTimer);
+	GetWorldTimerManager().SetTimer(ResetRotationTimer, this, &AFPSAIGuard::ResetOrientation, 3);
+}
+
+void AFPSAIGuard::ResetOrientation()
+{
+	SetActorRotation(OriginalRotation);
 }
 
 // Called every frame
