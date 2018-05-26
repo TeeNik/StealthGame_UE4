@@ -23,8 +23,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UPawnSensingComponent* PawnSensingComp;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void OnSeePawn(APawn* SeenPawn);
+
+	UFUNCTION(BlueprintCallable)
+	void OnNoiseHeard(APawn* NoiseInstigator, const FVector& Location, float Volume);
 
 public:	
 	// Called every frame
