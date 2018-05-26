@@ -3,6 +3,7 @@
 #include "FPSAIGuard.h"
 #include "DrawDebugHelpers.h"
 #include "TimerManager.h"
+#include "FPSGameMode.h"
 
 
 // Sets default values
@@ -31,6 +32,11 @@ void AFPSAIGuard::OnSeePawn(APawn* SeenPawn)
 	if (SeenPawn == nullptr) return;
 
 	DrawDebugSphere(GetWorld(), SeenPawn->GetActorLocation(), 32, 12, FColor::Red, false, 10);
+	AFPSGameMode* GM = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
+	if (GM)
+	{
+		GM->CompleteMission(SeenPawn, true);
+	}
 }
 
 void AFPSAIGuard::OnNoiseHeard(APawn* NoiseInstigator, const FVector& Location, float Volume)
