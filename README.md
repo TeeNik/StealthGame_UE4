@@ -1,1 +1,1 @@
-# StealthGame_UE4
+# Set of UE4 projects for self-education
