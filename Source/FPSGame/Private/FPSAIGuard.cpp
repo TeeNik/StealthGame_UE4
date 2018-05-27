@@ -4,6 +4,7 @@
 #include "DrawDebugHelpers.h"
 #include "TimerManager.h"
 #include "FPSGameMode.h"
+#include "AI/Navigation/NavigationSystem.h"
 
 
 // Sets default values
@@ -27,6 +28,14 @@ void AFPSAIGuard::BeginPlay()
 	
 	OriginalRotation = GetActorRotation();
 
+	if(bPatrol)	MoveToNextPatrolPont();
+
+}
+
+void AFPSAIGuard::StopMoving()
+{
+	AController* Controller = GetController();
+	if (Controller) Controller->StopMovement();
 }
 
 void AFPSAIGuard::OnPawnSeen(APawn* SeenPawn)
@@ -41,6 +50,8 @@ void AFPSAIGuard::OnPawnSeen(APawn* SeenPawn)
 	}
 
 	SetGuardState(EAIState::Alerted);
+
+	StopMoving();
 }
 
 void AFPSAIGuard::OnNoiseHeard(APawn* NoiseInstigator, const FVector& Location, float Volume)
@@ -62,6 +73,8 @@ void AFPSAIGuard::OnNoiseHeard(APawn* NoiseInstigator, const FVector& Location, 
 	GetWorldTimerManager().SetTimer(ResetRotationTimer, this, &AFPSAIGuard::ResetOrientation, 3);
 
 	SetGuardState(EAIState::Suspicious);
+
+	StopMoving();
 }
 
 void AFPSAIGuard::ResetOrientation()
@@ -69,6 +82,8 @@ void AFPSAIGuard::ResetOrientation()
 	if (GuardState == EAIState::Alerted) return;
 	SetActorRotation(OriginalRotation);
 	SetGuardState(EAIState::Idle);
+
+	if (bPatrol) MoveToNextPatrolPont();
 }
 
 void AFPSAIGuard::SetGuardState(EAIState NewState)
@@ -83,15 +98,30 @@ void AFPSAIGuard::SetGuardState(EAIState NewState)
 
 void AFPSAIGuard::MoveToNextPatrolPont()
 {
-	if(CurrentPatrolPoint == nullptr)
+	if(CurrentPatrolPoint == nullptr || CurrentPatrolPoint == SecondPatrolPoint)
 	{
-		
+		CurrentPatrolPoint = FirstPatrolPoint;
 	}
+	else
+	{
+		CurrentPatrolPoint = SecondPatrolPoint;
+	}
+
+	UNavigationSystem::SimpleMoveToActor(GetController(), CurrentPatrolPoint);
 }
 
 // Called every frame
 void AFPSAIGuard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if(CurrentPatrolPoint)
+	{
+		FVector Delta = GetActorLocation() - CurrentPatrolPoint->GetActorLocation();
+		float DistanceToGoal = Delta.Size();
+		if(DistanceToGoal < 50)
+		{
+			MoveToNextPatrolPont();
+		}
+	}
 }
 
