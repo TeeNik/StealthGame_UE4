@@ -13,8 +13,10 @@ AFPSAIGuard::AFPSAIGuard()
 	PrimaryActorTick.bCanEverTick = true;
 
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComp"));
-	PawnSensingComp->OnSeePawn.AddDynamic(this, &AFPSAIGuard::OnSeePawn);
+	PawnSensingComp->OnSeePawn.AddDynamic(this, &AFPSAIGuard::OnPawnSeen);
 	PawnSensingComp->OnHearNoise.AddDynamic(this, &AFPSAIGuard::OnNoiseHeard);
+
+	GuardState = EAIState::Idle;
 
 }
 
@@ -27,7 +29,7 @@ void AFPSAIGuard::BeginPlay()
 
 }
 
-void AFPSAIGuard::OnSeePawn(APawn* SeenPawn)
+void AFPSAIGuard::OnPawnSeen(APawn* SeenPawn)
 {
 	if (SeenPawn == nullptr) return;
 
@@ -35,12 +37,16 @@ void AFPSAIGuard::OnSeePawn(APawn* SeenPawn)
 	AFPSGameMode* GM = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
 	if (GM)
 	{
-		GM->CompleteMission(SeenPawn, true);
+		GM->CompleteMission(SeenPawn, false);
 	}
+
+	SetGuardState(EAIState::Alerted);
 }
 
 void AFPSAIGuard::OnNoiseHeard(APawn* NoiseInstigator, const FVector& Location, float Volume)
 {
+	if(GuardState == EAIState::Alerted) return;
+
 	DrawDebugSphere(GetWorld(), Location, 32, 12, FColor::Green, false, 10);
 
 	FVector Direction = Location - GetActorLocation();
@@ -54,11 +60,33 @@ void AFPSAIGuard::OnNoiseHeard(APawn* NoiseInstigator, const FVector& Location, 
 
 	GetWorldTimerManager().ClearTimer(ResetRotationTimer);
 	GetWorldTimerManager().SetTimer(ResetRotationTimer, this, &AFPSAIGuard::ResetOrientation, 3);
+
+	SetGuardState(EAIState::Suspicious);
 }
 
 void AFPSAIGuard::ResetOrientation()
 {
+	if (GuardState == EAIState::Alerted) return;
 	SetActorRotation(OriginalRotation);
+	SetGuardState(EAIState::Idle);
+}
+
+void AFPSAIGuard::SetGuardState(EAIState NewState)
+{
+	if(GuardState == NewState) return;
+
+	GuardState = NewState;
+
+	OnStateChanged(NewState);
+
+}
+
+void AFPSAIGuard::MoveToNextPatrolPont()
+{
+	if(CurrentPatrolPoint == nullptr)
+	{
+		
+	}
 }
 
 // Called every frame
