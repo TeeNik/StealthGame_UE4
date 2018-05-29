@@ -1,3 +1,0 @@
-C:\Users\teeni\Desktop\UE4\StealthGame\Source\FPSGame\FPSGame.Build.cs
-C:\Users\teeni\Desktop\UE4\StealthGame\Source\FPSGame.Target.cs
-C:\Users\teeni\Desktop\UE4\StealthGame\Source\FPSGameEditor.Target.cs
