@@ -4,6 +4,7 @@
 #include "DrawDebugHelpers.h"
 #include "TimerManager.h"
 #include "FPSGameMode.h"
+#include "Net/UnrealNetwork.h"
 #include "AI/Navigation/NavigationSystem.h"
 
 
@@ -86,14 +87,17 @@ void AFPSAIGuard::ResetOrientation()
 	if (bPatrol) MoveToNextPatrolPont();
 }
 
+void AFPSAIGuard::OnRep_GuardState()
+{
+	OnStateChanged(GuardState);
+}
+
 void AFPSAIGuard::SetGuardState(EAIState NewState)
 {
 	if(GuardState == NewState) return;
 
 	GuardState = NewState;
-
-	OnStateChanged(NewState);
-
+	OnRep_GuardState();
 }
 
 void AFPSAIGuard::MoveToNextPatrolPont()
@@ -123,5 +127,11 @@ void AFPSAIGuard::Tick(float DeltaTime)
 			MoveToNextPatrolPont();
 		}
 	}
+}
+
+void AFPSAIGuard::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFPSAIGuard, GuardState);
 }
 
