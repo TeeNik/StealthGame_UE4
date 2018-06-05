@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Camera/CameraComponent.h"
 #include "SCharacter.generated.h"
 
 UCLASS()
@@ -21,6 +22,9 @@ protected:
 
 	void MoveForward(float Value);
 	void MoveRight(float Value);
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UCameraComponent* CameraComp;
 
 public:
 	// Called every frame
