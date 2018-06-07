@@ -5,12 +5,14 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "SCharacter.generated.h"
+
 
 UCLASS()
 class COOPSHOOTER_API ASCharacter : public ACharacter
 {
-	GENERATED_BODY()
+GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
@@ -25,6 +27,10 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UCameraComponent* CameraComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	USpringArmComponent* SpringArmComp;
+
 
 public:
 	// Called every frame
