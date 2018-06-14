@@ -16,9 +16,8 @@ void ASWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComp"));
-	RootComponent = MeshComp;
-	
+	/*MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComp"));
+	RootComponent = MeshComp;*/
 }
 
 // Called every frame

@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "SWeapon.generated.h"
 
+class USkeletalMeshComponent;
+
 UCLASS()
 class COOPSHOOTER_API ASWeapon : public AActor
 {
@@ -15,17 +17,15 @@ public:
 	// Sets default values for this actor's properties
 	ASWeapon();
 
+	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USkeletalMeshComponent* MeshComp;*/
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	USkeletalMeshComponent* MeshComp;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	
-	
 };
