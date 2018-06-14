@@ -72,3 +72,8 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 }
 
+FVector ASCharacter::GetPawnViewLocation() const
+{
+	return CameraComp ? CameraComp->GetComponentLocation() : Super::GetPawnViewLocation();
+}
+
