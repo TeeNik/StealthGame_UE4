@@ -33,6 +33,15 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USpringArmComponent* SpringArmComp;
 
+	bool WantsToZoom;
+	float DefaulFOV;
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	float ZoomedFOV;
+	UPROPERTY(EditDefaultsOnly, Category = "Player", meta=(ClampMin = 0.1, ClampMax = 100))
+	float ZoomInterpSpeed;
+
+	void BeginZoom();
+	void EndZoom();
 
 public:
 	// Called every frame
