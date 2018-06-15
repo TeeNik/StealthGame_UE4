@@ -6,7 +6,9 @@
 #include "GameFramework/Character.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "SWeapon.h"
 #include "SCharacter.generated.h"
+
 
 
 UCLASS()
@@ -42,6 +44,17 @@ protected:
 
 	void BeginZoom();
 	void EndZoom();
+
+	ASWeapon* CurrentWeapon;
+	void StartFire();
+	void EndFire();
+	void Fire();
+
+	UPROPERTY(EditDefaultsOnly, Category="Player")
+	TSubclassOf<ASWeapon> StarterWeaponClass;
+
+	UPROPERTY(VisibleDefaultsOnly, Category="Player")
+	FName WeaponAttachSocketName;
 
 public:
 	// Called every frame
