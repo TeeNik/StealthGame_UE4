@@ -17,6 +17,7 @@ ASWeapon::ASWeapon()
 
 	MuzzleSocketName = "MuzzleSocket";
 	TracerTargetName = "BeamEnd";
+	BaseDamage = 20;
 }
 
 
@@ -41,11 +42,18 @@ void ASWeapon::Fire() {
 		FVector TracerEndPoint = TraceEnd;
 
 		FHitResult Hit;
-		if (GetWorld()->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, ECC_Visibility, QueryParams)) {
+		if (GetWorld()->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, COLLISION_WEAPON, QueryParams)) {
 			
 			AActor* HitActor = Hit.GetActor();
-			UGameplayStatics::ApplyPointDamage(HitActor, 20, ShotDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
+
 			EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+			float ActualDamage = BaseDamage;
+			if (SurfaceType == SURFACE_FLESH_VULNERABLE) {
+				ActualDamage *= 4;
+			}
+
+			UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
+			
 
 			UParticleSystem* SelectedEffect = nullptr;
 
