@@ -49,11 +49,13 @@ protected:
 	void BeginZoom();
 	void EndZoom();
 
+	UPROPERTY(Replicated)
 	ASWeapon* CurrentWeapon;
+
 	void StartFire();
 	void StopFire();
 
-	UPROPERTY(BlueprintReadOnly, Category="Player")
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadWrite, Category="Player")
 	bool isDead;
 	
 	UFUNCTION()

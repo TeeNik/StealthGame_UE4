@@ -4,6 +4,7 @@
 #include "GameFramework/PawnMovementComponent.h"
 #include "CoopShooter.h"
 #include "Components/CapsuleComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -142,5 +143,12 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 FVector ASCharacter::GetPawnViewLocation() const
 {
 	return CameraComp ? CameraComp->GetComponentLocation() : Super::GetPawnViewLocation();
+}
+
+void ASCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASCharacter, CurrentWeapon);
+	DOREPLIFETIME(ASCharacter, isDead);
 }
 
