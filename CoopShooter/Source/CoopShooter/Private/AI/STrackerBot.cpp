@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "AI/Navigation//NavigationSystem.h"
 #include "AI/Navigation//NavigationPath.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 ASTrackerBot::ASTrackerBot()
@@ -16,6 +17,9 @@ ASTrackerBot::ASTrackerBot()
 	MeshComp->SetSimulatePhysics(true);
 	RootComponent = MeshComp;
 
+	HealthComp = CreateDefaultSubobject<USHealthComponent>(TEXT("HealthComp"));
+	HealthComp->OnHealthChanged.AddDynamic(this, &ASTrackerBot::HandleTakeDamage);
+
 	UseVelocityChange = true;
 	MovementForce = 1000;
 	RequiredDistanceToTarget = 100;
@@ -26,6 +30,11 @@ void ASTrackerBot::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void ASTrackerBot::HandleTakeDamage(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
+{
+	UE_LOG(LogTemp, Log, TEXT("Health %s of %s"), *FString::SanitizeFloat(Health), *GetName())
 }
 
 FVector ASTrackerBot::GetNextPathPoint()
@@ -49,12 +58,14 @@ void ASTrackerBot::Tick(float DeltaTime)
 
 	if (DistanceToTarget <= RequiredDistanceToTarget) {
 		NextPathPoint = GetNextPathPoint();
+		DrawDebugString(GetWorld(), GetActorLocation(), "Target Reached!");
 	} else {
 		FVector ForceDirection = NextPathPoint - GetActorLocation();
 		ForceDirection.Normalize();
 		ForceDirection *= MovementForce;
 		MeshComp->AddForce(ForceDirection, NAME_None, UseVelocityChange);
+		DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), GetActorLocation() + ForceDirection, 32, FColor::Purple, false, 0, 0, 1);
 	}
-
+	DrawDebugSphere(GetWorld(), NextPathPoint, 20, 12, FColor::Purple, false, 0, 1);
 
 }
