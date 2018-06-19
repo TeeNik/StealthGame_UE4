@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "Components/StaticMeshComponent.h"
 #include "SHealthComponent.h"
+#include "Components/SphereComponent.h"
 #include "STrackerBot.generated.h"
 
 UCLASS()
@@ -26,6 +27,9 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Components")
 	USHealthComponent* HealthComp;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Components")
+	USphereComponent* SphereComp;
 
 	UFUNCTION()
 	void HandleTakeDamage(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser);
@@ -55,8 +59,17 @@ protected:
 
 	bool IsExploded;
 
+	FTimerHandle TimerHandle_SelfDamage;
+	
+	bool IsDestructionStarted;
+
+	UFUNCTION()
+	void DamageSelf();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 };
