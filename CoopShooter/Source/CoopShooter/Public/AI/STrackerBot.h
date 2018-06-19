@@ -7,6 +7,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "SHealthComponent.h"
 #include "Components/SphereComponent.h"
+#include "Sound/SoundCue.h"
 #include "STrackerBot.generated.h"
 
 UCLASS()
@@ -57,14 +58,23 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
 	UParticleSystem* ExplosionEffect;
 
-	bool IsExploded;
+	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
+	float SelfDamageInterval;
 
+	bool IsExploded;
 	FTimerHandle TimerHandle_SelfDamage;
-	
 	bool IsDestructionStarted;
 
 	UFUNCTION()
 	void DamageSelf();
+
+	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
+	USoundCue* SelfDestructSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
+	USoundCue* ExplodeSound;
+
+	
 
 public:	
 	// Called every frame
