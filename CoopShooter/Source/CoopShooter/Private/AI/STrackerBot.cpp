@@ -45,6 +45,9 @@ void ASTrackerBot::BeginPlay()
 
 	if (Role == ROLE_Authority) {
 		NextPathPoint = GetNextPathPoint();
+
+		FTimerHandle TimerHandle_CheckPowerLevel;
+		GetWorldTimerManager().SetTimer(TimerHandle_CheckPowerLevel, this, &ASTrackerBot::OnCheckNearbyBots, 1, true);
 	}
 }
 
@@ -86,11 +89,46 @@ void ASTrackerBot::SelfDestruct()
 	if (Role == ROLE_Authority) {
 		TArray<AActor*> IgnoredActors;
 		IgnoredActors.Add(this);
-		UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), true);
+		float ActualDamage = ExplosionDamage + (ExplosionDamage * PowerLevel);
+		UGameplayStatics::ApplyRadialDamage(this, ActualDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), true);
 
 		DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, false, 2, 0, 1);
 		SetLifeSpan(2);
 	}
+}
+
+void ASTrackerBot::OnCheckNearbyBots()
+{
+	const float Radius = 600;
+	FCollisionShape CollShape;
+	CollShape.SetSphere(Radius);
+	FCollisionObjectQueryParams QueryParams;
+	QueryParams.AddObjectTypesToQuery(ECC_PhysicsBody);
+	QueryParams.AddObjectTypesToQuery(ECC_Pawn);
+
+	TArray<FOverlapResult> Overlaps;
+	GetWorld()->OverlapMultiByObjectType(Overlaps, GetActorLocation(), FQuat::Identity, QueryParams, CollShape);
+	DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 12, FColor::Blue, false, 1);
+
+	int32 numOfBots = 0;
+	for (FOverlapResult Result : Overlaps) {
+		ASTrackerBot* Bot = Cast<ASTrackerBot>(Result.GetActor());
+		if (Bot && Bot != this) {
+			numOfBots++;
+		}
+	}
+
+	const int32 MaxPowerLevel = 4;
+	PowerLevel = FMath::Clamp(numOfBots, 0, MaxPowerLevel);
+	
+	if (MatInst == nullptr) {
+		MatInst = MeshComp->CreateAndSetMaterialInstanceDynamicFromMaterial(0, MeshComp->GetMaterial(0));
+	}
+	else {
+		float Alpha = PowerLevel / MaxPowerLevel;
+		MatInst->SetScalarParameterValue("PowerLevelAlpha", Alpha);
+	}
+	DrawDebugString(GetWorld(), FVector(0, 0, 0), FString::FromInt(PowerLevel), this, FColor::White, 1, true);
 }
 
 void ASTrackerBot::DamageSelf()

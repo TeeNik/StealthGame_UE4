@@ -61,6 +61,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
 	float SelfDamageInterval;
 
+	void OnCheckNearbyBots();
+	float PowerLevel;
+
 	bool IsExploded;
 	FTimerHandle TimerHandle_SelfDamage;
 	bool IsDestructionStarted;
