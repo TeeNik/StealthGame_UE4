@@ -33,7 +33,7 @@ protected:
 	UFUNCTION()
 	void Respawn();
 
-	UPROPERTY(EditDefaultsOnly, Category = "PickupActor")
+	UPROPERTY(EditInstanceOnly, Category = "PickupActor")
 	float CooldownDuration;
 
 	FTimerHandle RespawnTimer;
