@@ -7,9 +7,12 @@
 ASPickupActor::ASPickupActor()
 {
 	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
+	SphereComp->SetSphereRadius(75);
 	RootComponent = SphereComp;
 
 	DecalComp = CreateDefaultSubobject<UDecalComponent>(TEXT("DecalComp"));
+	DecalComp->SetRelativeRotation(FRotator(90, 0, 0));
+	DecalComp->DecalSize = FVector(64, 75, 75);
 	DecalComp->SetupAttachment(RootComponent);
 }
 
@@ -17,10 +20,28 @@ ASPickupActor::ASPickupActor()
 void ASPickupActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	Respawn();
+}
+
+void ASPickupActor::Respawn()
+{
+	if (PowerUpClass == nullptr) {
+		UE_LOG(LogTemp, Warning, TEXT("PowerUpClass is nullptr in %s. Please update your Blueprint"), *GetName());
+		return;
+	}
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	PowerUpInstance = GetWorld()->SpawnActor<ASPowerupActor>(PowerUpClass, GetTransform(), SpawnParams);
 }
 
 void ASPickupActor::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
+	if (PowerUpInstance) {
+		PowerUpInstance->ActivatePowerup();
+		PowerUpInstance = nullptr;
+
+		GetWorldTimerManager().SetTimer(RespawnTimer, this, &ASPickupActor::Respawn, CooldownDuration);
+	}
 }
