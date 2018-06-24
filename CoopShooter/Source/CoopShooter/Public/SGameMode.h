@@ -17,6 +17,7 @@ class COOPSHOOTER_API ASGameMode : public AGameModeBase
 protected:
 
 	FTimerHandle BotSpawnTimer;
+	FTimerHandle NextWaveTimer;
 	int32 NumOfBotsToSpawn;
 	int32 WaveCount;
 
@@ -30,11 +31,12 @@ protected:
 	void EndWave();
 	void PrepareForNextWave();
 	void SpawnBotTimerElapsed();
+	void CheckWaveState();
 
 public:
 
 	ASGameMode();
 	virtual void StartPlay() override;
-	
+	virtual void Tick(float DeltaSeconds) override;
 	
 };
