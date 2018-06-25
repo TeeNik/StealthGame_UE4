@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "SGameState.h"
 #include "SGameMode.generated.h"
 
 /**
@@ -34,6 +35,8 @@ protected:
 	void CheckWaveState();
 	void CheckAnyPlayerAlive();
 	void GameOver();
+	void SetWaveState(WaveState NewState);
+
 
 public:
 

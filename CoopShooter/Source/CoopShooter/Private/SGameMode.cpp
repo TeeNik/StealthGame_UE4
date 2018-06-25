@@ -11,6 +11,8 @@ ASGameMode::ASGameMode()
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickInterval = 1;
 	WaveCount = 0;
+
+	GameStateClass = ASGameState::StaticClass();
 }
 
 void ASGameMode::StartPlay()
@@ -107,5 +109,14 @@ void ASGameMode::GameOver()
 {
 	EndWave();
 	UE_LOG(LogTemp, Log, TEXT("Game Over!!"));
+}
+
+void ASGameMode::SetWaveState(WaveState NewState)
+{
+	ASGameState* GS = GetGameState<ASGameState>();
+	if(ensureAlways(GS))
+	{
+		GS->State = NewState;
+	}
 }
 
