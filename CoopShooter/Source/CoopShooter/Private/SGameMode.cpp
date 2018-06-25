@@ -5,7 +5,6 @@
 #include "TimerManager.h"
 
 
-
 ASGameMode::ASGameMode()
 {
 	TimeBetweenWaves = 2;
@@ -24,6 +23,7 @@ void ASGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	CheckWaveState();
+	CheckAnyPlayerAlive();
 }
 
 void ASGameMode::StartWave()
@@ -84,5 +84,28 @@ void ASGameMode::CheckWaveState()
 		PrepareForNextWave();
 	}
 
+}
+
+void ASGameMode::CheckAnyPlayerAlive()
+{
+	for(FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APlayerController* PC = It->Get();
+		if(PC && PC->GetPawn())
+		{
+			APawn* Pawn = PC->GetPawn();
+			USHealthComponent* HealthComp = Cast<USHealthComponent>(Pawn->GetComponentByClass(USHealthComponent::StaticClass()));
+			if (ensure((HealthComp)) && HealthComp->GetHealth() > 0)
+				return;
+		}
+	}
+
+	GameOver();
+}
+
+void ASGameMode::GameOver()
+{
+	EndWave();
+	UE_LOG(LogTemp, Log, TEXT("Game Over!!"));
 }
 

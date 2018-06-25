@@ -32,6 +32,8 @@ protected:
 	void PrepareForNextWave();
 	void SpawnBotTimerElapsed();
 	void CheckWaveState();
+	void CheckAnyPlayerAlive();
+	void GameOver();
 
 public:
 
