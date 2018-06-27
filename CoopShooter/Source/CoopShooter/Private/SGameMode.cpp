@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SGameMode.h"
+#include "SPlayerState.h"
 #include "SHealthComponent.h"
 #include "TimerManager.h"
 
@@ -13,6 +14,7 @@ ASGameMode::ASGameMode()
 	WaveCount = 0;
 
 	GameStateClass = ASGameState::StaticClass();
+	PlayerStateClass = ASPlayerState::StaticClass();
 }
 
 void ASGameMode::StartPlay()
