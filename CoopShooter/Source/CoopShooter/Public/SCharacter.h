@@ -67,6 +67,13 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, Category="Player")
 	FName WeaponAttachSocketName;
 
+	void NewCrouch();
+	void NewEndCrouch();
+
+	float CrouchProgress = 0;
+	UPROPERTY(BlueprintReadOnly, Category = "Player")
+	bool bIsCrouching;
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

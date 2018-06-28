@@ -60,7 +60,6 @@ void ASCharacter::MoveRight(float Value)
 
 void ASCharacter::BeginCrouch()
 {
-	GLog->Log("Crouch");
 	Crouch();
 }
 
@@ -105,6 +104,18 @@ void ASCharacter::OnHealthChanged(USHealthComponent* OwningHealthComp, float Hea
 	}
 }
 
+
+void ASCharacter::NewCrouch()
+{
+	bIsCrouching = true;
+}
+
+
+void ASCharacter::NewEndCrouch()
+{
+	bIsCrouching = false;
+}
+
 // Called every frame
 void ASCharacter::Tick(float DeltaTime)
 {
@@ -114,6 +125,17 @@ void ASCharacter::Tick(float DeltaTime)
 	float NewFOV = FMath::FInterpTo(CameraComp->FieldOfView, TargetFOV, DeltaTime, ZoomInterpSpeed);
 
 	CameraComp->SetFieldOfView(NewFOV);
+
+	float SecondsToCrouch = .2;
+
+	FVector uncrouchedCameraPos = FVector(40, 60, 0.0);
+	FVector crouchedCameraPos = FVector(40, 60, -32);
+	FVector currentCameraPos = CameraComp->RelativeLocation;
+	if ((!bIsCrouching && CrouchProgress > 0.0) || (bIsCrouching && CrouchProgress < 1.0)) {
+		CrouchProgress = FMath::Clamp(CrouchProgress + (DeltaTime / SecondsToCrouch) * (bIsCrouching ? 1.0 : -1.0), 0.0, 1.0);
+		currentCameraPos = FMath::Lerp(uncrouchedCameraPos, crouchedCameraPos, CrouchProgress);
+		CameraComp->SetRelativeLocation(currentCameraPos);
+	}
 
 }
 
@@ -127,8 +149,8 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAxis("LookUp", this, &ASCharacter::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("Turn", this, &ASCharacter::AddControllerYawInput);
-	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ASCharacter::BeginCrouch);
-	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ASCharacter::EndCrouch);
+	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ASCharacter::NewCrouch);
+	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ASCharacter::NewEndCrouch);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASCharacter::Jump);
 	
